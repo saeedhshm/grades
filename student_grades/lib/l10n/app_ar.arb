@@ -1,0 +1,20 @@
+{
+  "@@locale": "ar",
+  "appTitle": "حاسبة درجات الطالب",
+  "studentName": "اسم الطالب",
+  "studentNameHint": "أدخل اسم الطالب",
+  "week": "الأسبوع",
+  "homework": "الواجبات",
+  "activities": "الأنشطة",
+  "math": "الرياضيات",
+  "science": "العلوم",
+  "english": "الإنجليزية",
+  "calculate": "احسب",
+  "clear": "مسح",
+  "results": "النتائج",
+  "categoryAverage": "متوسط {category}",
+  "finalScore": "الدرجة النهائية",
+  "validationRequired": "يرجى ملء جميع الحقول",
+  "validationNameRequired": "اسم الطالب مطلوب",
+  "languageToggle": "EN"
+}

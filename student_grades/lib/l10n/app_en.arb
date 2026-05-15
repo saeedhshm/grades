@@ -1,0 +1,20 @@
+{
+  "@@locale": "en",
+  "appTitle": "Student Grades Calculator",
+  "studentName": "Student Name",
+  "studentNameHint": "Enter student name",
+  "week": "Week",
+  "homework": "Homework",
+  "activities": "Activities",
+  "math": "Math",
+  "science": "Science",
+  "english": "English",
+  "calculate": "Calculate",
+  "clear": "Clear",
+  "results": "Results",
+  "categoryAverage": "{category} Average",
+  "finalScore": "Final Score",
+  "validationRequired": "Please fill all fields",
+  "validationNameRequired": "Student name is required",
+  "languageToggle": "AR"
+}
