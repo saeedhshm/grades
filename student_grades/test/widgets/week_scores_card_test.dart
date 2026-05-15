@@ -14,7 +14,11 @@ void main() {
       color: Colors.blue,
     );
     final controller = TextEditingController();
-    addTearDown(controller.dispose);
+    final focusNode = FocusNode();
+    addTearDown(() {
+      controller.dispose();
+      focusNode.dispose();
+    });
 
     await tester.pumpWidget(
       buildTestApp(
@@ -23,7 +27,9 @@ void main() {
           weekNumber: 1,
           categories: [category],
           controllers: {category: controller},
+          focusNodes: {category: focusNode},
           onScoreChanged: (_, __) {},
+          onNext: (_, __) {},
         ),
       ),
     );
@@ -43,7 +49,11 @@ void main() {
       color: Colors.blue,
     );
     final controller = TextEditingController();
-    addTearDown(controller.dispose);
+    final focusNode = FocusNode();
+    addTearDown(() {
+      controller.dispose();
+      focusNode.dispose();
+    });
 
     double? lastScore;
 
@@ -54,7 +64,9 @@ void main() {
           weekNumber: 1,
           categories: [category],
           controllers: {category: controller},
+          focusNodes: {category: focusNode},
           onScoreChanged: (_, score) => lastScore = score,
+          onNext: (_, __) {},
         ),
       ),
     );
@@ -73,7 +85,11 @@ void main() {
       color: Colors.blue,
     );
     final controller = TextEditingController();
-    addTearDown(controller.dispose);
+    final focusNode = FocusNode();
+    addTearDown(() {
+      controller.dispose();
+      focusNode.dispose();
+    });
 
     await tester.pumpWidget(
       buildTestApp(
@@ -82,7 +98,9 @@ void main() {
           weekNumber: 1,
           categories: [category],
           controllers: {category: controller},
+          focusNodes: {category: focusNode},
           onScoreChanged: (_, __) {},
+          onNext: (_, __) {},
         ),
       ),
     );

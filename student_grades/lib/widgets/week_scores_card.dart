@@ -7,14 +7,20 @@ class WeekScoresCard extends StatelessWidget {
   final int weekNumber;
   final List<CustomCategory> categories;
   final Map<CustomCategory, TextEditingController> controllers;
+  final Map<CustomCategory, FocusNode> focusNodes;
   final Function(CustomCategory, double?) onScoreChanged;
+  final Function(CustomCategory, int) onNext;
+  final VoidCallback? onLastField;
 
   const WeekScoresCard({
     super.key,
     required this.weekNumber,
     required this.categories,
     required this.controllers,
+    required this.focusNodes,
     required this.onScoreChanged,
+    required this.onNext,
+    this.onLastField,
   });
 
   @override
@@ -64,6 +70,7 @@ class WeekScoresCard extends StatelessWidget {
             ...categories.asMap().entries.map((entry) {
               final index = entry.key;
               final category = entry.value;
+              final isLastCategory = index == categories.length - 1;
               return Padding(
                 padding: EdgeInsets.only(bottom: index < categories.length - 1 ? 14 : 0),
                 child: Row(
@@ -104,8 +111,12 @@ class WeekScoresCard extends StatelessWidget {
                       width: 90,
                       child: TextFormField(
                         controller: controllers[category],
+                        focusNode: focusNodes[category],
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                         textAlign: TextAlign.center,
+                        textInputAction: isLastCategory && onLastField != null
+                            ? TextInputAction.done
+                            : TextInputAction.next,
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                         ],
@@ -135,6 +146,13 @@ class WeekScoresCard extends StatelessWidget {
                           ),
                           contentPadding: const EdgeInsets.symmetric(vertical: 10),
                         ),
+                        onFieldSubmitted: (_) {
+                          if (isLastCategory && onLastField != null) {
+                            onLastField!();
+                          } else {
+                            onNext(category, weekNumber - 1);
+                          }
+                        },
                         onChanged: (value) {
                           final score = double.tryParse(value);
                           onScoreChanged(category, score);
