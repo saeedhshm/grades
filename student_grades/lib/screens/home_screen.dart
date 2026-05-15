@@ -12,11 +12,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _weeksController = TextEditingController();
-
   @override
   void dispose() {
-    _weeksController.dispose();
     super.dispose();
   }
 
@@ -304,6 +301,121 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showWeeksSheet() {
+    final provider = Provider.of<CategoryProvider>(context, listen: false);
+    int weeks = provider.weeksCount;
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+          ),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Center(
+                child: Container(
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(Icons.date_range_rounded, color: Color(0xFF0D9488), size: 24),
+              ),
+              const SizedBox(height: 16),
+              const Text('عدد الأسابيع',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFF292524))),
+              const SizedBox(height: 8),
+              Text('اختر عدد أسابيع الفصل الدراسي',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600)),
+              const SizedBox(height: 28),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _StepperButton(
+                    icon: Icons.remove_rounded,
+                    onTap: () {
+                      if (weeks > 1) {
+                        setSheetState(() => weeks--);
+                      }
+                    },
+                  ),
+                  const SizedBox(width: 24),
+                  Container(
+                    width: 80,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F4),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      '$weeks',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF292524)),
+                    ),
+                  ),
+                  const SizedBox(width: 24),
+                  _StepperButton(
+                    icon: Icons.add_rounded,
+                    onTap: () {
+                      if (weeks < 52) {
+                        setSheetState(() => weeks++);
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('إلغاء'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 2,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        provider.setWeeksCount(weeks);
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          _buildSnack('تم حفظ عدد الأسابيع: $weeks'),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0D9488),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('حفظ'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<CategoryProvider>(
@@ -333,9 +445,6 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         final categories = provider.categories;
-        if (_weeksController.text.isEmpty) {
-          _weeksController.text = provider.weeksCount.toString();
-        }
 
         return Scaffold(
           backgroundColor: const Color(0xFFFAFAF9),
@@ -395,32 +504,25 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      width: 80,
-                      child: TextField(
-                        controller: _weeksController,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16),
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                          fillColor: const Color(0xFFF5F5F4),
-                          suffix: GestureDetector(
-                            onTap: () {
-                              final count = int.tryParse(_weeksController.text);
-                              if (count != null && count > 0 && count <= 52) {
-                                provider.setWeeksCount(count);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  _buildSnack('تم حفظ عدد الأسابيع: $count'),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  _buildSnack('أدخل رقماً بين 1 و 52', isError: true),
-                                );
-                              }
-                            },
-                            child: const Icon(Icons.check_circle_rounded,
-                              color: Color(0xFF0D9488), size: 20),
+                    Material(
+                      color: const Color(0xFFF5F5F4),
+                      borderRadius: BorderRadius.circular(12),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: _showWeeksSheet,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${provider.weeksCount}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800, fontSize: 18, color: Color(0xFF292524)),
+                              ),
+                              const SizedBox(width: 6),
+                              Icon(Icons.edit_rounded, size: 14, color: Colors.grey.shade500),
+                            ],
                           ),
                         ),
                       ),
@@ -501,8 +603,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ),
-        );
-      },
+    );
+      }
+    );
+  }
+}
+
+class _StepperButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _StepperButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: const Color(0xFF0D9488).withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          width: 52,
+          height: 52,
+          alignment: Alignment.center,
+          child: Icon(icon, color: const Color(0xFF0D9488), size: 26),
+        ),
+      ),
     );
   }
 }
