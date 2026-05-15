@@ -30,60 +30,68 @@ class WeekScoresCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE7E5E4)),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 12, offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF0D9488), Color(0xFF0F766E)],
+                colors: [Color(0xFF4F46E5), Color(0xFF6366F1)],
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
               ),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
             ),
             child: Row(
               children: [
-                const Icon(Icons.calendar_today_rounded, color: Colors.white, size: 16),
+                const Icon(Icons.calendar_month_rounded, color: Colors.white, size: 18),
                 const SizedBox(width: 8),
                 Text(
                   '${AppLocalizations.of(context)!.week} $weekNumber',
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
-                    fontSize: 15,
+                    fontSize: 16,
                   ),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(18, 14, 18, 16),
+            padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
             child: Column(
               children: categories.asMap().entries.map((e) {
                 final i = e.key;
                 final cat = e.value;
                 final isLast = i == lastIdx;
                 return Padding(
-                  padding: EdgeInsets.only(bottom: i < lastIdx ? 12 : 0),
+                  padding: EdgeInsets.only(bottom: i < lastIdx ? 14 : 0),
                   child: Row(
                     children: [
                       Container(
-                        width: 36,
-                        height: 36,
+                        width: 40, height: 40,
                         decoration: BoxDecoration(
-                          color: cat.color.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(11),
+                          gradient: LinearGradient(
+                            colors: [cat.color.withValues(alpha: 0.15), cat.color.withValues(alpha: 0.08)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                         child: Center(
                           child: Container(
-                            width: 10,
-                            height: 10,
+                            width: 12, height: 12,
                             decoration: BoxDecoration(
                               color: cat.color,
                               shape: BoxShape.circle,
@@ -96,9 +104,7 @@ class WeekScoresCard extends StatelessWidget {
                         child: Text(
                           cat.getLocalizedName(context),
                           style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF292524),
+                            fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF0F172A),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -106,7 +112,7 @@ class WeekScoresCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 10),
                       SizedBox(
-                        width: 84,
+                        width: 88,
                         child: TextFormField(
                           controller: controllers[cat],
                           focusNode: focusNodes[cat],
@@ -118,25 +124,24 @@ class WeekScoresCard extends StatelessWidget {
                             FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
                           ],
                           style: const TextStyle(
-                              fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF292524)),
+                              fontWeight: FontWeight.w700, fontSize: 16, color: Color(0xFF0F172A)),
                           decoration: InputDecoration(
                             hintText: '0',
-                            hintStyle:
-                                TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w500),
+                            hintStyle: TextStyle(color: Colors.grey.shade300, fontWeight: FontWeight.w600),
                             filled: true,
-                            fillColor: const Color(0xFFF5F5F4),
-                            contentPadding: const EdgeInsets.symmetric(vertical: 9),
+                            fillColor: const Color(0xFFF8FAFC),
+                            contentPadding: const EdgeInsets.symmetric(vertical: 10),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(11),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(11),
-                              borderSide: const BorderSide(color: Color(0xFFE7E5E4)),
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(11),
-                              borderSide: BorderSide(color: cat.color, width: 1.5),
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(color: cat.color, width: 2),
                             ),
                           ),
                           onFieldSubmitted: (_) {

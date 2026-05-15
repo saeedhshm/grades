@@ -41,16 +41,12 @@ class _GradesCalculatorScreenState extends State<GradesCalculatorScreen>
     _studentScores = StudentScores.empty(categories: cats, weeksCount: _weeksCount);
     _controllers = List.generate(_weeksCount, (wi) {
       final map = <CustomCategory, TextEditingController>{};
-      for (final c in cats) {
-        map[c] = TextEditingController(text: '');
-      }
+      for (final c in cats) map[c] = TextEditingController(text: '');
       return map;
     });
     _focusNodes = List.generate(_weeksCount, (wi) {
       final map = <CustomCategory, FocusNode>{};
-      for (final c in cats) {
-        map[c] = FocusNode();
-      }
+      for (final c in cats) map[c] = FocusNode();
       return map;
     });
   }
@@ -84,7 +80,8 @@ class _GradesCalculatorScreenState extends State<GradesCalculatorScreen>
         ]),
         backgroundColor: const Color(0xFFE11D48),
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        margin: const EdgeInsets.all(16),
       ));
       return;
     }
@@ -125,89 +122,160 @@ class _GradesCalculatorScreenState extends State<GradesCalculatorScreen>
       ..addAll(List.generate(_weeksCount, (_) => GlobalKey()));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAFAF9),
-      appBar: AppBar(title: Text(AppLocalizations.of(context)!.appTitle)),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-              child: Form(
-                key: _formKey,
-                child: Column(
+      backgroundColor: const Color(0xFFFDF2F8),
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.appTitle),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color(0xFF4F46E5).withValues(alpha: 0.06),
+                const Color(0xFFFDF2F8),
+              ],
+            ),
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // Progress indicator bar
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Row(
                   children: [
-                    ...List.generate(_weeksCount, (wi) => Padding(
-                      key: _weekKeys[wi],
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: Consumer<CategoryProvider>(
-                        builder: (_, p, __) => WeekScoresCard(
-                          weekNumber: wi + 1,
-                          categories: p.categories,
-                          controllers: _controllers[wi],
-                          focusNodes: _focusNodes[wi],
-                          onScoreChanged: (c, v) => _onChanged(c, wi, v),
-                          onNext: (c, _) => _moveNext(c, wi),
-                          onLastField: _calculate,
-                        ),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEEF2FF),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    )),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8),
-                      child: Row(
+                      child: const Icon(Icons.assignment_rounded, color: Color(0xFF4F46E5), size: 22),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 54,
-                              child: ElevatedButton.icon(
-                                onPressed: _calculate,
-                                icon: const Icon(Icons.calculate_rounded, size: 22),
-                                label: Text(AppLocalizations.of(context)!.calculate),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF0D9488),
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16)),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: SizedBox(
-                              height: 54,
-                              child: OutlinedButton.icon(
-                                onPressed: _clear,
-                                icon: const Icon(Icons.refresh_rounded, size: 22),
-                                label: Text(AppLocalizations.of(context)!.clear),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: const Color(0xFF292524),
-                                  side: const BorderSide(color: Color(0xFFD6D3D1)),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16)),
-                                ),
-                              ),
-                            ),
-                          ),
+                          const Text('إدخال الدرجات',
+                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF0F172A))),
+                          const SizedBox(height: 4),
+                          Text('$_weeksCount أسابيع - ${_studentScores.customScores.length} مواد',
+                            style: TextStyle(fontSize: 13, color: Colors.grey.shade500)),
                         ],
                       ),
                     ),
-                    if (_showResults) ...[
-                      const SizedBox(height: 8),
-                      FadeTransition(
-                        opacity: _fadeIn,
-                        child: SlideTransition(
-                          position: Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero)
-                              .animate(_fadeIn),
-                          child: ResultsCard(studentScores: _studentScores),
-                        ),
-                      ),
-                    ],
                   ],
                 ),
               ),
-            ),
+              // Week cards
+              ...List.generate(_weeksCount, (wi) => Padding(
+                key: _weekKeys[wi],
+                padding: const EdgeInsets.only(bottom: 14),
+                child: Consumer<CategoryProvider>(
+                  builder: (_, p, __) => WeekScoresCard(
+                    weekNumber: wi + 1,
+                    categories: p.categories,
+                    controllers: _controllers[wi],
+                    focusNodes: _focusNodes[wi],
+                    onScoreChanged: (c, v) => _onChanged(c, wi, v),
+                    onNext: (c, _) => _moveNext(c, wi),
+                    onLastField: _calculate,
+                  ),
+                ),
+              )),
+              const SizedBox(height: 4),
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF4F46E5), Color(0xFF6366F1)],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFF4F46E5).withValues(alpha: 0.3),
+                            blurRadius: 12, offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: _calculate,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.calculate_rounded, color: Colors.white, size: 22),
+                              const SizedBox(width: 10),
+                              Text(AppLocalizations.of(context)!.calculate,
+                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Container(
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFCBD5E1), width: 1.5),
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: _clear,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.refresh_rounded, color: const Color(0xFF64748B), size: 22),
+                              const SizedBox(width: 10),
+                              Text(AppLocalizations.of(context)!.clear,
+                                style: const TextStyle(color: Color(0xFF0F172A), fontSize: 16, fontWeight: FontWeight.w700)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (_showResults) ...[
+                const SizedBox(height: 20),
+                FadeTransition(
+                  opacity: _fadeIn,
+                  child: SlideTransition(
+                    position: Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero).animate(_fadeIn),
+                    child: ResultsCard(studentScores: _studentScores),
+                  ),
+                ),
+              ],
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
