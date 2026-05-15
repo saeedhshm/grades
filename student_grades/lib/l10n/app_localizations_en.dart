@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Student Grades Calculator';
+  String get appTitle => 'Student Grades';
 
   @override
   String get studentName => 'Student Name';

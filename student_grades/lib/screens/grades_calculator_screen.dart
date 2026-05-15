@@ -49,6 +49,9 @@ class _GradesCalculatorScreenState extends State<GradesCalculatorScreen>
       for (final c in cats) map[c] = FocusNode();
       return map;
     });
+    _weekKeys
+      ..clear()
+      ..addAll(List.generate(_weeksCount, (_) => GlobalKey()));
   }
 
   void _moveNext(CustomCategory cat, int weekIdx) {
@@ -93,13 +96,29 @@ class _GradesCalculatorScreenState extends State<GradesCalculatorScreen>
   void _clear() {
     final p = Provider.of<CategoryProvider>(context, listen: false);
     final cats = p.categories;
+    for (final w in _focusNodes) {
+      for (final f in w.values) f.dispose();
+    }
+    for (final w in _controllers) {
+      for (final c in w.values) c.dispose();
+    }
     setState(() {
       _weeksCount = p.weeksCount;
       _studentScores = StudentScores.empty(categories: cats, weeksCount: _weeksCount);
+      _controllers = List.generate(_weeksCount, (wi) {
+        final map = <CustomCategory, TextEditingController>{};
+        for (final c in cats) map[c] = TextEditingController(text: '');
+        return map;
+      });
+      _focusNodes = List.generate(_weeksCount, (wi) {
+        final map = <CustomCategory, FocusNode>{};
+        for (final c in cats) map[c] = FocusNode();
+        return map;
+      });
+      _weekKeys
+        ..clear()
+        ..addAll(List.generate(_weeksCount, (_) => GlobalKey()));
       _showResults = false;
-      for (int w = 0; w < _weeksCount; w++) {
-        for (final c in cats) _controllers[w][c]?.text = '';
-      }
     });
   }
 
@@ -117,9 +136,6 @@ class _GradesCalculatorScreenState extends State<GradesCalculatorScreen>
 
   @override
   Widget build(BuildContext context) {
-    _weekKeys
-      ..clear()
-      ..addAll(List.generate(_weeksCount, (_) => GlobalKey()));
 
     return Scaffold(
       backgroundColor: const Color(0xFFFDF2F8),
@@ -191,7 +207,7 @@ class _GradesCalculatorScreenState extends State<GradesCalculatorScreen>
                     focusNodes: _focusNodes[wi],
                     onScoreChanged: (c, v) => _onChanged(c, wi, v),
                     onNext: (c, _) => _moveNext(c, wi),
-                    onLastField: _calculate,
+                    onLastField: wi == _weeksCount - 1 ? _calculate : null,
                   ),
                 ),
               )),

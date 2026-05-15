@@ -1,6 +1,6 @@
 {
   "@@locale": "ar",
-  "appTitle": "حاسبة درجات الطالب",
+  "appTitle": "تقويم الطالب",
   "studentName": "اسم الطالب",
   "studentNameHint": "أدخل اسم الطالب",
   "week": "الأسبوع",

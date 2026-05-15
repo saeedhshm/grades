@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Student Grades Calculator",
+  "appTitle": "Student Grades",
   "studentName": "Student Name",
   "studentNameHint": "Enter student name",
   "week": "Week",
