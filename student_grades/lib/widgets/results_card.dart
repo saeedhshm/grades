@@ -11,38 +11,33 @@ class ResultsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final finalScore = studentScores.getFinalScore();
     final maxScore = studentScores.customScores.length * 100;
-    final double scorePercentage = maxScore > 0 ? (finalScore / maxScore) * 100 : 0.0;
+    final double pct = maxScore > 0 ? (finalScore / maxScore) * 100 : 0.0;
 
-    Color getScoreColor(double percentage) {
-      if (percentage >= 90) return const Color(0xFF10B981);
-      if (percentage >= 75) return const Color(0xFF6366F1);
-      if (percentage >= 60) return const Color(0xFFF59E0B);
-      return Colors.red.shade400;
+    Color scoreColor(double v) {
+      if (v >= 90) return const Color(0xFF059669);
+      if (v >= 75) return const Color(0xFF0D9488);
+      if (v >= 60) return const Color(0xFFD97706);
+      return const Color(0xFFE11D48);
     }
 
-    String getScoreGrade(double percentage) {
-      if (percentage >= 90) return 'ممتاز';
-      if (percentage >= 75) return 'جيد جداً';
-      if (percentage >= 60) return 'جيد';
-      if (percentage >= 50) return 'مقبول';
+    String scoreGrade(double v) {
+      if (v >= 90) return 'ممتاز';
+      if (v >= 75) return 'جيد جداً';
+      if (v >= 60) return 'جيد';
+      if (v >= 50) return 'مقبول';
       return 'ضعيف';
     }
 
+    final sColor = scoreColor(pct);
+
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            const Color(0xFF6366F1),
-            const Color(0xFF8B5CF6),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: const Color(0xFF292524),
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6366F1).withOpacity(0.3),
-            blurRadius: 20,
+            color: const Color(0xFF292524).withValues(alpha: 0.15),
+            blurRadius: 24,
             offset: const Offset(0, 8),
           ),
         ],
@@ -57,20 +52,16 @@ class ResultsCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(
-                    Icons.emoji_events_outlined,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: const Icon(Icons.emoji_events_rounded, color: Color(0xFFF59E0B), size: 22),
                 ),
                 const SizedBox(width: 12),
                 Text(
                   AppLocalizations.of(context)!.results,
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.w800,
                     color: Colors.white,
                   ),
@@ -81,47 +72,50 @@ class ResultsCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.white.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(18),
               ),
               child: Column(
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
                         finalScore.toStringAsFixed(1),
                         style: const TextStyle(
-                          fontSize: 42,
+                          fontSize: 46,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
-                          letterSpacing: -1,
+                          letterSpacing: -1.5,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '/ $maxScore',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white.withOpacity(0.7),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 6, left: 6),
+                        child: Text(
+                          '/ $maxScore',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white.withValues(alpha: 0.5),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                     decoration: BoxDecoration(
-                      color: getScoreColor(scorePercentage).withOpacity(0.3),
+                      color: sColor.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      getScoreGrade(scorePercentage),
+                      scoreGrade(pct),
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: getScoreColor(scorePercentage),
+                        color: sColor,
                       ),
                     ),
                   ),
@@ -129,67 +123,71 @@ class ResultsCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            ...studentScores.customScores.keys.map((category) {
-              final average = studentScores.getCategoryAverage(category);
+            ...studentScores.customScores.keys.map((cat) {
+              final avg = studentScores.getCategoryAverage(cat);
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: category.color.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 10,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: category.color,
-                              shape: BoxShape.circle,
-                            ),
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: cat.color.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: cat.color,
+                            shape: BoxShape.circle,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          category.getLocalizedName(context),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        cat.getLocalizedName(context),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          average.toStringAsFixed(1),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                          ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        avg.toStringAsFixed(1),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               );
             }),
+            const SizedBox(height: 8),
+            Center(
+              child: Container(
+                height: 3,
+                width: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
           ],
         ),
       ),
